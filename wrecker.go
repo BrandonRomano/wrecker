@@ -1,4 +1,4 @@
-package main
+package wrecker
 
 import (
 	"encoding/json"
