@@ -1,0 +1,6 @@
+# vim
+*.swp
+
+# go
+wrecker
+_vendor/*
