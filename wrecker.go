@@ -21,7 +21,11 @@ const (
 )
 
 func (w *Wrecker) Get(endpoint string, params url.Values, response interface{}) error {
-	return w.SendRequest(GET, endpoint, params, response)
+	if params != nil {
+		queryString := "?" + params.Encode()
+		endpoint = strings.Join([]string{endpoint, queryString}, "")
+	}
+	return w.SendRequest(GET, endpoint, nil, response)
 }
 
 func (w *Wrecker) Post(endpoint string, params url.Values, response interface{}) error {
