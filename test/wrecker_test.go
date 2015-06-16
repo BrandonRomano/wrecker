@@ -5,18 +5,17 @@ import (
 	"github.com/brandonromano/wrecker/test/models"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"net/url"
 	"os"
 	"testing"
 	"time"
 )
 
-var wreckerClient wrecker.Wrecker
+var wreckerClient *wrecker.Wrecker
 
 func init() {
 	go startServer()
 
-	wreckerClient = wrecker.Wrecker{
+	wreckerClient = &wrecker.Wrecker{
 		BaseURL: "http://localhost:" + os.Getenv("PORT"),
 		HttpClient: &http.Client{
 			Timeout: 10 * time.Second,
@@ -25,14 +24,16 @@ func init() {
 }
 
 func TestSuccessfulGet(t *testing.T) {
-	params := url.Values{}
-	params.Add("id", "1")
 
 	response := models.Response{
 		Content: new(models.User),
 	}
 
-	err := wreckerClient.Get("/users", params, &response)
+	err := wreckerClient.Get("/users").
+		WithParam("id", "1").
+		Into(&response).
+		Execute()
+
 	if err != nil {
 		t.Error("Error performing GET /users")
 	}
@@ -45,7 +46,10 @@ func TestFailGet(t *testing.T) {
 		Content: new(models.User),
 	}
 
-	err := wreckerClient.Get("/users", nil, &response)
+	err := wreckerClient.Get("/users").
+		Into(&response).
+		Execute()
+
 	if err != nil {
 		t.Error("Error performing GET /users")
 	}
@@ -58,12 +62,13 @@ func TestSuccessfulPost(t *testing.T) {
 		Content: new(models.User),
 	}
 
-	params := url.Values{}
-	params.Add("id", "1")
-	params.Add("user_name", "BrandonRomano")
-	params.Add("location", "Brooklyn, NY")
+	err := wreckerClient.Post("/users").
+		WithParam("id", "1").
+		WithParam("user_name", "BrandonRomano").
+		WithParam("location", "Brooklyn, NY").
+		Into(&response).
+		Execute()
 
-	err := wreckerClient.Post("/users", params, &response)
 	if err != nil {
 		t.Error("Error performing POST /users")
 	}
@@ -76,11 +81,12 @@ func TestFailPost(t *testing.T) {
 		Content: new(models.User),
 	}
 
-	params := url.Values{}
-	params.Add("id", "1")
-	params.Add("user_name", "BrandonRomano")
+	err := wreckerClient.Post("/users").
+		WithParam("id", "1").
+		WithParam("user_name", "BrandonRomano").
+		Into(&response).
+		Execute()
 
-	err := wreckerClient.Post("/users", params, &response)
 	if err != nil {
 		t.Error("Error performing POST /users")
 	}
@@ -94,11 +100,12 @@ func TestSuccessfulPut(t *testing.T) {
 	}
 
 	username := "BrandonRomano100"
-	params := url.Values{}
-	params.Add("id", "1")
-	params.Add("user_name", username)
+	err := wreckerClient.Put("/users").
+		WithParam("id", "1").
+		WithParam("user_name", username).
+		Into(&response).
+		Execute()
 
-	err := wreckerClient.Put("/users", params, &response)
 	if err != nil {
 		t.Error("Error performing PUT /users")
 	}
@@ -114,7 +121,10 @@ func TestFailPut(t *testing.T) {
 		Content: new(models.User),
 	}
 
-	err := wreckerClient.Put("/users", nil, &response)
+	err := wreckerClient.Put("/users").
+		Into(&response).
+		Execute()
+
 	if err != nil {
 		t.Error("Error performing PUT /users")
 	}
@@ -125,7 +135,10 @@ func TestFailPut(t *testing.T) {
 func TestSuccessfulDelete(t *testing.T) {
 	response := models.Response{}
 
-	err := wreckerClient.Delete("/users/1", &response)
+	err := wreckerClient.Delete("/users/1").
+		Into(&response).
+		Execute()
+
 	if err != nil {
 		t.Error("Error performing DELETE /users")
 	}
@@ -136,7 +149,10 @@ func TestSuccessfulDelete(t *testing.T) {
 func TestFailDelete(t *testing.T) {
 	response := models.Response{}
 
-	err := wreckerClient.Delete("/users/a", &response)
+	err := wreckerClient.Delete("/users/a").
+		Into(&response).
+		Execute()
+
 	if err != nil {
 		t.Error("Error performing DELETE /users")
 	}

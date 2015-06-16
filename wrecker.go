@@ -20,30 +20,34 @@ const (
 	DELETE = "DELETE"
 )
 
-func (w *Wrecker) Get(endpoint string, params url.Values, response interface{}) error {
-	if params != nil {
-		queryString := "?" + params.Encode()
-		endpoint = strings.Join([]string{endpoint, queryString}, "")
+func (w *Wrecker) newRequest(httpVerb string, endpoint string) *WreckerRequest {
+	return &WreckerRequest{
+		HttpVerb:      httpVerb,
+		Endpoint:      endpoint,
+		Params:        url.Values{},
+		WreckerClient: w,
 	}
-	return w.SendRequest(GET, endpoint, nil, response)
 }
 
-func (w *Wrecker) Post(endpoint string, params url.Values, response interface{}) error {
-	return w.SendRequest(POST, endpoint, params, response)
+func (w *Wrecker) Get(endpoint string) *WreckerRequest {
+	return w.newRequest(GET, endpoint)
 }
 
-func (w *Wrecker) Put(endpoint string, params url.Values, response interface{}) error {
-	return w.SendRequest(PUT, endpoint, params, response)
+func (w *Wrecker) Post(endpoint string) *WreckerRequest {
+	return w.newRequest(POST, endpoint)
 }
 
-func (w *Wrecker) Delete(endpoint string, response interface{}) error {
-	return w.SendRequest(DELETE, endpoint, nil, response)
+func (w *Wrecker) Put(endpoint string) *WreckerRequest {
+	return w.newRequest(PUT, endpoint)
 }
 
-func (w *Wrecker) SendRequest(verb string, endpoint string, params url.Values, response interface{}) error {
+func (w *Wrecker) Delete(endpoint string) *WreckerRequest {
+	return w.newRequest(DELETE, endpoint)
+}
+
+func (w *Wrecker) sendRequest(verb string, requestURL string, bodyParams url.Values, response interface{}) error {
 	// Preparing Request
-	requestURL := strings.Join([]string{w.BaseURL, endpoint}, "")
-	paramsReader := strings.NewReader(params.Encode())
+	paramsReader := strings.NewReader(bodyParams.Encode())
 	clientReq, err := http.NewRequest(verb, requestURL, paramsReader)
 	if err != nil {
 		return err
