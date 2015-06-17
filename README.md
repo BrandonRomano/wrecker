@@ -25,13 +25,23 @@ wreckerClient = &wrecker.Wrecker{
     HttpClient: &http.Client{
         Timeout: 10 * time.Second,
     },
+    DefaultContentType: "application/x-www-form-urlencoded",
 }
 ```
 
-There are two values you'll have to set
+There are three values you'll have to set
 
 - `BaseURL`: This is the base URL of the API you will be using
 - `HttpClient`: This is an instance of an http.Client.  Feel free to tweak this as much as you would like.
+- `DefaultContentType`: This is the value of the `Content-Type` header that will be added to every request.  This can be overridden at request level, but for convenience you can set a default.
+
+You're only going to have to do this once, but if you still find it's too verbose or you don't need the flexibility you can do this:
+
+```go
+wreckerClient = wrecker.New("http://localhost:" + os.Getenv("PORT"))
+```
+
+This way will default the `HttpClient` + `DefaultContentType` to the values set in the first example.
 
 ### Creating Requests
 

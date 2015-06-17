@@ -6,11 +6,23 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type Wrecker struct {
-	BaseURL    string
-	HttpClient *http.Client
+	BaseURL            string
+	HttpClient         *http.Client
+	DefaultContentType string
+}
+
+func New(baseUrl string) *Wrecker {
+	return &Wrecker{
+		BaseURL: baseUrl,
+		HttpClient: &http.Client{
+			Timeout: 10 * time.Second,
+		},
+		DefaultContentType: "application/x-www-form-urlencoded",
+	}
 }
 
 const (
@@ -52,7 +64,7 @@ func (w *Wrecker) sendRequest(verb string, requestURL string, bodyParams url.Val
 	if err != nil {
 		return err
 	}
-	clientReq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	clientReq.Header.Add("Content-Type", w.DefaultContentType)
 
 	// Executing request
 	clientRes, err := w.HttpClient.Do(clientReq)

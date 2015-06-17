@@ -4,23 +4,15 @@ import (
 	"github.com/brandonromano/wrecker"
 	"github.com/brandonromano/wrecker/test/models"
 	"github.com/stretchr/testify/assert"
-	"net/http"
 	"os"
 	"testing"
-	"time"
 )
 
 var wreckerClient *wrecker.Wrecker
 
 func init() {
 	go startServer()
-
-	wreckerClient = &wrecker.Wrecker{
-		BaseURL: "http://localhost:" + os.Getenv("PORT"),
-		HttpClient: &http.Client{
-			Timeout: 10 * time.Second,
-		},
-	}
+	wreckerClient = wrecker.New("http://localhost:" + os.Getenv("PORT"))
 }
 
 func TestSuccessfulGet(t *testing.T) {
