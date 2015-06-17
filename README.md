@@ -2,6 +2,8 @@
 
 Wrecker is a request builder for JSON based APIs, written in Go.
 
+[![Build Status](https://travis-ci.org/BrandonRomano/wrecker.svg?branch=master)](https://travis-ci.org/BrandonRomano/wrecker)
+
 ## Fluent Builder
 
 Without digging too far into anything, here is what your requests will look like with Wrecker:
