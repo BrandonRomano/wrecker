@@ -11,11 +11,17 @@ type WreckerRequest struct {
 	Endpoint      string
 	Response      interface{}
 	Params        url.Values
+	Headers       map[string]string
 	WreckerClient *Wrecker
 }
 
 func (r *WreckerRequest) WithParam(key, value string) *WreckerRequest {
 	r.Params.Add(key, value)
+	return r
+}
+
+func (r *WreckerRequest) WithHeader(key, value string) *WreckerRequest {
+	r.Headers[key] = value
 	return r
 }
 
@@ -41,20 +47,20 @@ func (r *WreckerRequest) Execute() error {
 
 func (r *WreckerRequest) executeGet() error {
 	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint, "?", r.Params.Encode()}, "")
-	return r.WreckerClient.sendRequest(GET, requestURL, nil, r.Response)
+	return r.WreckerClient.sendRequest(GET, requestURL, r.Headers, nil, r.Response)
 }
 
 func (r *WreckerRequest) executePost() error {
 	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
-	return r.WreckerClient.sendRequest(POST, requestURL, r.Params, r.Response)
+	return r.WreckerClient.sendRequest(POST, requestURL, r.Headers, r.Params, r.Response)
 }
 
 func (r *WreckerRequest) executePut() error {
 	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
-	return r.WreckerClient.sendRequest(PUT, requestURL, r.Params, r.Response)
+	return r.WreckerClient.sendRequest(PUT, requestURL, r.Headers, r.Params, r.Response)
 }
 
 func (r *WreckerRequest) executeDelete() error {
 	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
-	return r.WreckerClient.sendRequest(DELETE, requestURL, nil, r.Response)
+	return r.WreckerClient.sendRequest(DELETE, requestURL, r.Headers, nil, r.Response)
 }

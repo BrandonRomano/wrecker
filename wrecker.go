@@ -37,6 +37,7 @@ func (w *Wrecker) newRequest(httpVerb string, endpoint string) *WreckerRequest {
 		HttpVerb:      httpVerb,
 		Endpoint:      endpoint,
 		Params:        url.Values{},
+		Headers:       make(map[string]string),
 		WreckerClient: w,
 	}
 }
@@ -57,7 +58,7 @@ func (w *Wrecker) Delete(endpoint string) *WreckerRequest {
 	return w.newRequest(DELETE, endpoint)
 }
 
-func (w *Wrecker) sendRequest(verb string, requestURL string, bodyParams url.Values, response interface{}) error {
+func (w *Wrecker) sendRequest(verb string, requestURL string, headers map[string]string, bodyParams url.Values, response interface{}) error {
 	// Preparing Request
 	paramsReader := strings.NewReader(bodyParams.Encode())
 	clientReq, err := http.NewRequest(verb, requestURL, paramsReader)
@@ -65,6 +66,11 @@ func (w *Wrecker) sendRequest(verb string, requestURL string, bodyParams url.Val
 		return err
 	}
 	clientReq.Header.Add("Content-Type", w.DefaultContentType)
+
+	// Add headers to clientReq
+	for index, value := range headers {
+		clientReq.Header.Add(index, value)
+	}
 
 	// Executing request
 	clientRes, err := w.HttpClient.Do(clientReq)
