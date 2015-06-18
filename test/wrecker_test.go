@@ -1,8 +1,8 @@
 package test
 
 import (
-	"github.com/brandonromano/wrecker"
-	"github.com/brandonromano/wrecker/test/models"
+	"github.com/benpate/wrecker"
+	"github.com/benpate/wrecker/test/models"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
@@ -166,4 +166,60 @@ func TestDeleteFailFromHeader(t *testing.T) {
 	}
 
 	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
+}
+
+func TestRestPost(t *testing.T) {
+
+	response := models.Response{
+		Content: new(models.User),
+	}
+
+	userIn := models.User{
+		Id:       98,
+		UserName: "Steve Rogers",
+		Location: "New York, NY",
+	}
+
+	err := wreckerClient.Post("/users").
+		WithBody(userIn).
+		Into(&response).
+		Execute()
+
+	assert.True(t, err == nil)
+	assert.True(t, response.Success)
+
+	userOut, ok := response.Content.(*models.User)
+
+	assert.True(t, ok)
+	assert.True(t, userOut.Id == 98)
+	assert.True(t, userOut.UserName == "Steve Rogers")
+	assert.True(t, userOut.Location == "New York, NY")
+}
+
+func TestRestPut(t *testing.T) {
+
+	response := models.Response{
+		Content: new(models.User),
+	}
+
+	userIn := models.User{
+		Id:       99,
+		UserName: "Natasha Romanov",
+		Location: "New York, NY",
+	}
+
+	err := wreckerClient.Put("/users").
+		WithBody(userIn).
+		Into(&response).
+		Execute()
+
+	assert.True(t, err == nil)
+	assert.True(t, response.Success)
+
+	userOut, ok := response.Content.(*models.User)
+
+	assert.True(t, ok)
+	assert.True(t, userOut.Id == 99)
+	assert.True(t, userOut.UserName == "Natasha Romanov")
+	assert.True(t, userOut.Location == "New York, NY")
 }
