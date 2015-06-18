@@ -2,6 +2,7 @@ package wrecker
 
 import (
 	"errors"
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -30,7 +31,7 @@ func (r *WreckerRequest) Into(response interface{}) *WreckerRequest {
 	return r
 }
 
-func (r *WreckerRequest) Execute() error {
+func (r *WreckerRequest) Execute() (*http.Response, error) {
 	switch r.HttpVerb {
 	case GET:
 		return r.executeGet()
@@ -41,26 +42,26 @@ func (r *WreckerRequest) Execute() error {
 	case DELETE:
 		return r.executeDelete()
 	default:
-		return errors.New("Must use a valid HTTP verb")
+		return nil, errors.New("Must use a valid HTTP verb")
 	}
 }
 
-func (r *WreckerRequest) executeGet() error {
+func (r *WreckerRequest) executeGet() (*http.Response, error) {
 	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint, "?", r.Params.Encode()}, "")
 	return r.WreckerClient.sendRequest(GET, requestURL, r.Headers, nil, r.Response)
 }
 
-func (r *WreckerRequest) executePost() error {
+func (r *WreckerRequest) executePost() (*http.Response, error) {
 	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
 	return r.WreckerClient.sendRequest(POST, requestURL, r.Headers, r.Params, r.Response)
 }
 
-func (r *WreckerRequest) executePut() error {
+func (r *WreckerRequest) executePut() (*http.Response, error) {
 	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
 	return r.WreckerClient.sendRequest(PUT, requestURL, r.Headers, r.Params, r.Response)
 }
 
-func (r *WreckerRequest) executeDelete() error {
+func (r *WreckerRequest) executeDelete() (*http.Response, error) {
 	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
 	return r.WreckerClient.sendRequest(DELETE, requestURL, r.Headers, nil, r.Response)
 }
