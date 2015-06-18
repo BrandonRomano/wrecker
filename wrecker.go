@@ -1,7 +1,9 @@
 package wrecker
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -58,18 +60,34 @@ func (w *Wrecker) Delete(endpoint string) *WreckerRequest {
 	return w.newRequest(DELETE, endpoint)
 }
 
-func (w *Wrecker) sendRequest(verb string, requestURL string, headers map[string]string, bodyParams url.Values, response interface{}) (*http.Response, error) {
-	// Preparing Request
-	paramsReader := strings.NewReader(bodyParams.Encode())
-	clientReq, err := http.NewRequest(verb, requestURL, paramsReader)
+func (w *Wrecker) sendRequest(r *WreckerRequest) (*http.Response, error) {
+	var contentType string
+	var bodyReader io.Reader
+	var err error
+
+	// Empty Body means that we're posting Params via Form encoding
+	if r.Body == nil {
+		bodyReader = strings.NewReader(r.Params.Encode())
+		contentType = w.DefaultContentType
+	} else {
+		// Otherwise, we're sending a request body
+		if bodyReader, err = prepareRequestBody(r.Body); err != nil {
+			return nil, err
+		}
+		contentType = "application/json"
+	}
+
+	// Create the HTTP client request
+	clientReq, err := http.NewRequest(r.HttpVerb, r.URL(), bodyReader)
 	if err != nil {
 		return nil, err
 	}
-	clientReq.Header.Add("Content-Type", w.DefaultContentType)
+
+	clientReq.Header.Add("Content-Type", contentType)
 
 	// Add headers to clientReq
-	for index, value := range headers {
-		clientReq.Header.Add(index, value)
+	for key, value := range r.Headers {
+		clientReq.Header.Add(key, value)
 	}
 
 	// Executing request
@@ -84,6 +102,32 @@ func (w *Wrecker) sendRequest(verb string, requestURL string, headers map[string
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(body, &response)
+
+	err = json.Unmarshal(body, r.Response)
 	return resp, err
+}
+
+// prepareRequestBody() function was originally included in the
+// github.com/franela/goreq application (which is also MIT licensed)
+func prepareRequestBody(b interface{}) (io.Reader, error) {
+	switch b.(type) {
+	case string:
+		// treat is as text
+		return strings.NewReader(b.(string)), nil
+	case io.Reader:
+		// treat is as text
+		return b.(io.Reader), nil
+	case []byte:
+		//treat as byte array
+		return bytes.NewReader(b.([]byte)), nil
+	case nil:
+		return nil, nil
+	default:
+		// try to jsonify it
+		j, err := json.Marshal(b)
+		if err == nil {
+			return bytes.NewReader(j), nil
+		}
+		return nil, err
+	}
 }
