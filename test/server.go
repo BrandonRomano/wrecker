@@ -95,4 +95,9 @@ func DeleteUser(writer http.ResponseWriter, request *http.Request, params httpro
 		response.StatusCode = http.StatusBadRequest
 		return
 	}
+
+	header := request.Header.Get("delete-test-header")
+	if len(header) == 0 {
+		response.StatusCode = http.StatusBadRequest
+	}
 }
