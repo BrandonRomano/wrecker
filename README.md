@@ -72,7 +72,7 @@ Now that we have our struct and our instance of `Wrecker`, we're ready to actual
 ```go
 user := User{}
 
-err := wreckerClient.Get("/users").
+response, err := wreckerClient.Get("/users").
     WithParam("id", "1").
     Into(&user).
     Execute()

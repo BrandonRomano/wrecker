@@ -58,12 +58,12 @@ func (w *Wrecker) Delete(endpoint string) *WreckerRequest {
 	return w.newRequest(DELETE, endpoint)
 }
 
-func (w *Wrecker) sendRequest(verb string, requestURL string, headers map[string]string, bodyParams url.Values, response interface{}) error {
+func (w *Wrecker) sendRequest(verb string, requestURL string, headers map[string]string, bodyParams url.Values, response interface{}) (*http.Response, error) {
 	// Preparing Request
 	paramsReader := strings.NewReader(bodyParams.Encode())
 	clientReq, err := http.NewRequest(verb, requestURL, paramsReader)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	clientReq.Header.Add("Content-Type", w.DefaultContentType)
 
@@ -73,17 +73,17 @@ func (w *Wrecker) sendRequest(verb string, requestURL string, headers map[string
 	}
 
 	// Executing request
-	clientRes, err := w.HttpClient.Do(clientReq)
+	resp, err := w.HttpClient.Do(clientReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer clientRes.Body.Close()
+	defer resp.Body.Close()
 
 	// Packing into response
-	body, err := ioutil.ReadAll(clientRes.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = json.Unmarshal(body, &response)
-	return err
+	return resp, err
 }

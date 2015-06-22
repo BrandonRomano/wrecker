@@ -4,6 +4,7 @@ import (
 	"github.com/brandonromano/wrecker"
 	"github.com/brandonromano/wrecker/test/models"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"os"
 	"testing"
 )
@@ -16,12 +17,11 @@ func init() {
 }
 
 func TestSuccessfulGet(t *testing.T) {
-
 	response := models.Response{
 		Content: new(models.User),
 	}
 
-	err := wreckerClient.Get("/users").
+	httpResponse, err := wreckerClient.Get("/users").
 		WithParam("id", "1").
 		Into(&response).
 		Execute()
@@ -30,7 +30,8 @@ func TestSuccessfulGet(t *testing.T) {
 		t.Error("Error performing GET /users")
 	}
 
-	assert.True(t, response.Success)
+	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
+	assert.Equal(t, response.Content.(*models.User).UserName, "BrandonRomano")
 }
 
 func TestFailGet(t *testing.T) {
@@ -38,7 +39,7 @@ func TestFailGet(t *testing.T) {
 		Content: new(models.User),
 	}
 
-	err := wreckerClient.Get("/users").
+	httpResponse, err := wreckerClient.Get("/users").
 		Into(&response).
 		Execute()
 
@@ -46,7 +47,7 @@ func TestFailGet(t *testing.T) {
 		t.Error("Error performing GET /users")
 	}
 
-	assert.True(t, !response.Success)
+	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
 
 func TestSuccessfulPost(t *testing.T) {
@@ -54,7 +55,7 @@ func TestSuccessfulPost(t *testing.T) {
 		Content: new(models.User),
 	}
 
-	err := wreckerClient.Post("/users").
+	httpResponse, err := wreckerClient.Post("/users").
 		WithParam("id", "1").
 		WithParam("user_name", "BrandonRomano").
 		WithParam("location", "Brooklyn, NY").
@@ -65,7 +66,8 @@ func TestSuccessfulPost(t *testing.T) {
 		t.Error("Error performing POST /users")
 	}
 
-	assert.True(t, response.Success)
+	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
+	assert.Equal(t, response.Content.(*models.User).UserName, "BrandonRomano")
 }
 
 func TestFailPost(t *testing.T) {
@@ -73,7 +75,7 @@ func TestFailPost(t *testing.T) {
 		Content: new(models.User),
 	}
 
-	err := wreckerClient.Post("/users").
+	httpResponse, err := wreckerClient.Post("/users").
 		WithParam("id", "1").
 		WithParam("user_name", "BrandonRomano").
 		Into(&response).
@@ -83,7 +85,7 @@ func TestFailPost(t *testing.T) {
 		t.Error("Error performing POST /users")
 	}
 
-	assert.True(t, !response.Success)
+	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
 
 func TestSuccessfulPut(t *testing.T) {
@@ -92,7 +94,7 @@ func TestSuccessfulPut(t *testing.T) {
 	}
 
 	username := "BrandonRomano100"
-	err := wreckerClient.Put("/users").
+	httpResponse, err := wreckerClient.Put("/users").
 		WithParam("id", "1").
 		WithParam("user_name", username).
 		Into(&response).
@@ -102,10 +104,8 @@ func TestSuccessfulPut(t *testing.T) {
 		t.Error("Error performing PUT /users")
 	}
 
-	assert.True(t, response.Success)
-
-	user := response.Content.(*models.User)
-	assert.Equal(t, user.UserName, username)
+	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
+	assert.Equal(t, response.Content.(*models.User).UserName, username)
 }
 
 func TestFailPut(t *testing.T) {
@@ -113,7 +113,7 @@ func TestFailPut(t *testing.T) {
 		Content: new(models.User),
 	}
 
-	err := wreckerClient.Put("/users").
+	httpResponse, err := wreckerClient.Put("/users").
 		Into(&response).
 		Execute()
 
@@ -121,13 +121,13 @@ func TestFailPut(t *testing.T) {
 		t.Error("Error performing PUT /users")
 	}
 
-	assert.True(t, !response.Success)
+	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
 
 func TestSuccessfulDelete(t *testing.T) {
 	response := models.Response{}
 
-	err := wreckerClient.Delete("/users/1").
+	httpResponse, err := wreckerClient.Delete("/users/1").
 		WithHeader("delete-test-header", "delete-test-header-value").
 		Into(&response).
 		Execute()
@@ -136,13 +136,13 @@ func TestSuccessfulDelete(t *testing.T) {
 		t.Error("Error performing DELETE /users")
 	}
 
-	assert.True(t, response.Success)
+	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
 }
 
 func TestDeleteFailFromURL(t *testing.T) {
 	response := models.Response{}
 
-	err := wreckerClient.Delete("/users/a").
+	httpResponse, err := wreckerClient.Delete("/users/a").
 		WithHeader("delete-test-header", "delete-test-header-value").
 		Into(&response).
 		Execute()
@@ -151,13 +151,13 @@ func TestDeleteFailFromURL(t *testing.T) {
 		t.Error("Error performing DELETE /users")
 	}
 
-	assert.True(t, !response.Success)
+	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
 
 func TestDeleteFailFromHeader(t *testing.T) {
 	response := models.Response{}
 
-	err := wreckerClient.Delete("/users/1").
+	httpResponse, err := wreckerClient.Delete("/users/1").
 		Into(&response).
 		Execute()
 
@@ -165,5 +165,5 @@ func TestDeleteFailFromHeader(t *testing.T) {
 		t.Error("Error performing DELETE /users")
 	}
 
-	assert.True(t, !response.Success)
+	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
