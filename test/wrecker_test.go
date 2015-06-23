@@ -1,8 +1,8 @@
 package test
 
 import (
-	"github.com/benpate/wrecker"
-	"github.com/benpate/wrecker/test/models"
+	"github.com/brandonromano/wrecker"
+	"github.com/brandonromano/wrecker/test/models"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
@@ -180,7 +180,7 @@ func TestRestPost(t *testing.T) {
 		Location: "New York, NY",
 	}
 
-	err := wreckerClient.Post("/users").
+	_, err := wreckerClient.Post("/users").
 		WithBody(userIn).
 		Into(&response).
 		Execute()
@@ -208,7 +208,7 @@ func TestRestPut(t *testing.T) {
 		Location: "New York, NY",
 	}
 
-	err := wreckerClient.Put("/users").
+	_, err := wreckerClient.Put("/users").
 		WithBody(userIn).
 		Into(&response).
 		Execute()
