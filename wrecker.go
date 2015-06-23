@@ -109,8 +109,6 @@ func (w *Wrecker) sendRequest(r *WreckerRequest) (*http.Response, error) {
 	return resp, err
 }
 
-// prepareRequestBody() function was originally included in the
-// github.com/franela/goreq application (which is also MIT licensed)
 func prepareRequestBody(b interface{}) (io.Reader, error) {
 
 	// try to jsonify it
