@@ -27,6 +27,7 @@ func buildRouter() *httprouter.Router {
 	router.POST("/users", PostUser)
 	router.PUT("/users", PutUser)
 	router.DELETE("/users/:id", DeleteUser)
+	router.PUT("/status", PutStatus)
 	return router
 }
 
@@ -131,5 +132,24 @@ func DeleteUser(writer http.ResponseWriter, request *http.Request, params httpro
 	header := request.Header.Get("delete-test-header")
 	if len(header) == 0 {
 		response.StatusCode = http.StatusBadRequest
+	}
+}
+
+func PutStatus(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	response := new(models.Response).Init()
+	defer response.Output(writer)
+
+	// Special handling for REST/JSON encoding
+	if request.Header.Get("Content-Type") == "application/json" {
+
+		var status string
+
+		if err := json.NewDecoder(request.Body).Decode(&status); err != nil {
+			response.StatusCode = http.StatusBadRequest
+			response.Content = err.Error()
+			return
+		}
+
+		response.Content = status
 	}
 }
