@@ -71,10 +71,12 @@ func (w *Wrecker) sendRequest(r *WreckerRequest) (*http.Response, error) {
 		contentType = w.DefaultContentType
 	} else {
 		// Otherwise, we're sending a request body
-		if bodyReader, err = prepareRequestBody(r.Body); err != nil {
+		contentType = "application/json"
+		bodyReader, err = prepareRequestBody(r.Body)
+
+		if err != nil {
 			return nil, err
 		}
-		contentType = "application/json"
 	}
 
 	// Create the HTTP client request
@@ -110,24 +112,12 @@ func (w *Wrecker) sendRequest(r *WreckerRequest) (*http.Response, error) {
 // prepareRequestBody() function was originally included in the
 // github.com/franela/goreq application (which is also MIT licensed)
 func prepareRequestBody(b interface{}) (io.Reader, error) {
-	switch b.(type) {
-	case string:
-		// treat is as text
-		return strings.NewReader(b.(string)), nil
-	case io.Reader:
-		// treat is as text
-		return b.(io.Reader), nil
-	case []byte:
-		//treat as byte array
-		return bytes.NewReader(b.([]byte)), nil
-	case nil:
-		return nil, nil
-	default:
-		// try to jsonify it
-		j, err := json.Marshal(b)
-		if err == nil {
-			return bytes.NewReader(j), nil
-		}
-		return nil, err
+
+	// try to jsonify it
+	j, err := json.Marshal(b)
+
+	if err == nil {
+		return bytes.NewReader(j), nil
 	}
+	return nil, err
 }
