@@ -34,8 +34,8 @@ const (
 	DELETE = "DELETE"
 )
 
-func (w *Wrecker) newRequest(httpVerb string, endpoint string) *WreckerRequest {
-	return &WreckerRequest{
+func (w *Wrecker) newRequest(httpVerb string, endpoint string) *Request {
+	return &Request{
 		HttpVerb:      httpVerb,
 		Endpoint:      endpoint,
 		Params:        url.Values{},
@@ -44,23 +44,23 @@ func (w *Wrecker) newRequest(httpVerb string, endpoint string) *WreckerRequest {
 	}
 }
 
-func (w *Wrecker) Get(endpoint string) *WreckerRequest {
+func (w *Wrecker) Get(endpoint string) *Request {
 	return w.newRequest(GET, endpoint)
 }
 
-func (w *Wrecker) Post(endpoint string) *WreckerRequest {
+func (w *Wrecker) Post(endpoint string) *Request {
 	return w.newRequest(POST, endpoint)
 }
 
-func (w *Wrecker) Put(endpoint string) *WreckerRequest {
+func (w *Wrecker) Put(endpoint string) *Request {
 	return w.newRequest(PUT, endpoint)
 }
 
-func (w *Wrecker) Delete(endpoint string) *WreckerRequest {
+func (w *Wrecker) Delete(endpoint string) *Request {
 	return w.newRequest(DELETE, endpoint)
 }
 
-func (w *Wrecker) sendRequest(r *WreckerRequest) (*http.Response, error) {
+func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	var contentType string
 	var bodyReader io.Reader
 	var err error
