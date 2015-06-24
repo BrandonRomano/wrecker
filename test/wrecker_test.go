@@ -22,7 +22,7 @@ func TestSuccessfulGet(t *testing.T) {
 	}
 
 	httpResponse, err := wreckerClient.Get("/users").
-		WithParam("id", "1").
+		Param("id", "1").
 		Into(&response).
 		Execute()
 
@@ -56,9 +56,9 @@ func TestSuccessfulPost(t *testing.T) {
 	}
 
 	httpResponse, err := wreckerClient.Post("/users").
-		WithParam("id", "1").
-		WithParam("user_name", "BrandonRomano").
-		WithParam("location", "Brooklyn, NY").
+		Param("id", "1").
+		Param("user_name", "BrandonRomano").
+		Param("location", "Brooklyn, NY").
 		Into(&response).
 		Execute()
 
@@ -76,8 +76,8 @@ func TestFailPost(t *testing.T) {
 	}
 
 	httpResponse, err := wreckerClient.Post("/users").
-		WithParam("id", "1").
-		WithParam("user_name", "BrandonRomano").
+		Param("id", "1").
+		Param("user_name", "BrandonRomano").
 		Into(&response).
 		Execute()
 
@@ -95,8 +95,8 @@ func TestSuccessfulPut(t *testing.T) {
 
 	username := "BrandonRomano100"
 	httpResponse, err := wreckerClient.Put("/users").
-		WithParam("id", "1").
-		WithParam("user_name", username).
+		Param("id", "1").
+		Param("user_name", username).
 		Into(&response).
 		Execute()
 
@@ -128,7 +128,7 @@ func TestSuccessfulDelete(t *testing.T) {
 	response := models.Response{}
 
 	httpResponse, err := wreckerClient.Delete("/users/1").
-		WithHeader("delete-test-header", "delete-test-header-value").
+		Header("delete-test-header", "delete-test-header-value").
 		Into(&response).
 		Execute()
 
@@ -143,7 +143,7 @@ func TestDeleteFailFromURL(t *testing.T) {
 	response := models.Response{}
 
 	httpResponse, err := wreckerClient.Delete("/users/a").
-		WithHeader("delete-test-header", "delete-test-header-value").
+		Header("delete-test-header", "delete-test-header-value").
 		Into(&response).
 		Execute()
 

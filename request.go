@@ -11,23 +11,23 @@ type Request struct {
 	Endpoint      string
 	Response      interface{}
 	Params        url.Values
-	Body          interface{}
+	HttpBody      interface{}
 	Headers       map[string]string
 	WreckerClient *Wrecker
 }
 
-func (r *Request) WithParam(key, value string) *Request {
+func (r *Request) Param(key, value string) *Request {
 	r.Params.Add(key, value)
 	return r
 }
 
-func (r *Request) WithHeader(key, value string) *Request {
+func (r *Request) Header(key, value string) *Request {
 	r.Headers[key] = value
 	return r
 }
 
-func (r *Request) WithBody(body interface{}) *Request {
-	r.Body = body
+func (r *Request) Body(body interface{}) *Request {
+	r.HttpBody = body
 	return r
 }
 
