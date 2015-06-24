@@ -23,6 +23,7 @@ func TestPostJSON(t *testing.T) {
 		Into(&response).
 		Execute()
 
+	t.Log(err)
 	assert.True(t, err == nil)
 	assert.True(t, response.Success)
 
@@ -51,6 +52,7 @@ func TestPutJSON(t *testing.T) {
 		Into(&response).
 		Execute()
 
+	t.Log(err)
 	assert.True(t, err == nil)
 	assert.True(t, response.Success)
 
@@ -73,6 +75,7 @@ func TestPutString(t *testing.T) {
 		Into(&response).
 		Execute()
 
+	t.Log(err)
 	assert.True(t, err == nil)
 	assert.True(t, response.Success)
 
