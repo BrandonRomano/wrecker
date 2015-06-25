@@ -15,7 +15,14 @@ type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
 	DefaultContentType string
+	Interceptors       []InterceptorFunc
 }
+
+// InterceptorFunc is a function that receives (and can modify) a
+// wrecker.Request before it is sent to the server.  The Wrecker instance
+// maintains an array of InterceptorFuncs that are applied to every
+// wrecker.Request in the order that they were assigned.
+type InterceptorFunc func(*Request) error
 
 func New(baseUrl string) *Wrecker {
 	return &Wrecker{
@@ -60,10 +67,24 @@ func (w *Wrecker) Delete(endpoint string) *Request {
 	return w.newRequest(DELETE, endpoint)
 }
 
+// Interceptor adds a new InterceptorFunc into the array of
+// functions that are applied to each wrecker.Request *before* it is sent
+// to the server.
+func (w *Wrecker) AddInterceptor(fn InterceptorFunc) {
+	w.Interceptors = append(w.Interceptors, fn)
+}
+
 func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	var contentType string
 	var bodyReader io.Reader
 	var err error
+
+	// Apply InterceptorFuncs
+	for _, fn := range w.Interceptors {
+		if err := fn(r); err != nil {
+			return nil, err
+		}
+	}
 
 	// Empty Body means that we're posting Params via Form encoding
 	if r.HttpBody == nil {
