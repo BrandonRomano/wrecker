@@ -6,7 +6,7 @@ import (
 	"net/url"
 )
 
-type WreckerRequest struct {
+type Request struct {
 	HttpVerb      string
 	Endpoint      string
 	Response      interface{}
@@ -16,27 +16,27 @@ type WreckerRequest struct {
 	WreckerClient *Wrecker
 }
 
-func (r *WreckerRequest) WithParam(key, value string) *WreckerRequest {
+func (r *Request) WithParam(key, value string) *Request {
 	r.Params.Add(key, value)
 	return r
 }
 
-func (r *WreckerRequest) WithHeader(key, value string) *WreckerRequest {
+func (r *Request) WithHeader(key, value string) *Request {
 	r.Headers[key] = value
 	return r
 }
 
-func (r *WreckerRequest) WithBody(body interface{}) *WreckerRequest {
+func (r *Request) WithBody(body interface{}) *Request {
 	r.Body = body
 	return r
 }
 
-func (r *WreckerRequest) Into(response interface{}) *WreckerRequest {
+func (r *Request) Into(response interface{}) *Request {
 	r.Response = response
 	return r
 }
 
-func (r *WreckerRequest) Execute() (*http.Response, error) {
+func (r *Request) Execute() (*http.Response, error) {
 	switch r.HttpVerb {
 
 	case GET, POST, PUT, DELETE:
@@ -47,7 +47,7 @@ func (r *WreckerRequest) Execute() (*http.Response, error) {
 	}
 }
 
-func (r *WreckerRequest) URL() string {
+func (r *Request) URL() string {
 	result := r.WreckerClient.BaseURL + r.Endpoint
 
 	if (r.HttpVerb == "GET") && (len(r.Params) > 0) {
