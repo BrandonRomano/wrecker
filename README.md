@@ -1,8 +1,6 @@
 # Wrecker
 
-Wrecker is a request builder for JSON based APIs, written in Go.  
-
-Please note that the API is being actively developed, so please expect breaking changes until we post a 1.0 release.
+Wrecker is a request builder for JSON based APIs, written in Go.
 
 [![Build Status](https://travis-ci.org/BrandonRomano/wrecker.svg?branch=master)](https://travis-ci.org/BrandonRomano/wrecker)
 
@@ -11,9 +9,9 @@ Please note that the API is being actively developed, so please expect breaking 
 Without digging too far into anything, here is what your requests will look like with Wrecker:
 
 ```go
-wreckerClient.Get("/users"). // Create a new wrecker instance
-    Param("id", "1").        // Add a URL parameter to the request
-    Into(&user).             // Load the response into the user struct
+wreckerClient.Get("/users").
+    Param("id", "1").
+    Into(&user).            // Loads the response into the user struct
     Execute()
 ```
 
