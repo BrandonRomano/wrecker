@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 type WreckerRequest struct {
@@ -12,6 +11,7 @@ type WreckerRequest struct {
 	Endpoint      string
 	Response      interface{}
 	Params        url.Values
+	Body          interface{}
 	Headers       map[string]string
 	WreckerClient *Wrecker
 }
@@ -26,6 +26,11 @@ func (r *WreckerRequest) WithHeader(key, value string) *WreckerRequest {
 	return r
 }
 
+func (r *WreckerRequest) WithBody(body interface{}) *WreckerRequest {
+	r.Body = body
+	return r
+}
+
 func (r *WreckerRequest) Into(response interface{}) *WreckerRequest {
 	r.Response = response
 	return r
@@ -33,35 +38,20 @@ func (r *WreckerRequest) Into(response interface{}) *WreckerRequest {
 
 func (r *WreckerRequest) Execute() (*http.Response, error) {
 	switch r.HttpVerb {
-	case GET:
-		return r.executeGet()
-	case POST:
-		return r.executePost()
-	case PUT:
-		return r.executePut()
-	case DELETE:
-		return r.executeDelete()
+
+	case GET, POST, PUT, DELETE:
+		return r.WreckerClient.sendRequest(r)
+
 	default:
 		return nil, errors.New("Must use a valid HTTP verb")
 	}
 }
 
-func (r *WreckerRequest) executeGet() (*http.Response, error) {
-	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint, "?", r.Params.Encode()}, "")
-	return r.WreckerClient.sendRequest(GET, requestURL, r.Headers, nil, r.Response)
-}
+func (r *WreckerRequest) URL() string {
+	result := r.WreckerClient.BaseURL + r.Endpoint
 
-func (r *WreckerRequest) executePost() (*http.Response, error) {
-	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
-	return r.WreckerClient.sendRequest(POST, requestURL, r.Headers, r.Params, r.Response)
-}
-
-func (r *WreckerRequest) executePut() (*http.Response, error) {
-	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
-	return r.WreckerClient.sendRequest(PUT, requestURL, r.Headers, r.Params, r.Response)
-}
-
-func (r *WreckerRequest) executeDelete() (*http.Response, error) {
-	requestURL := strings.Join([]string{r.WreckerClient.BaseURL, r.Endpoint}, "")
-	return r.WreckerClient.sendRequest(DELETE, requestURL, r.Headers, nil, r.Response)
+	if (r.HttpVerb == "GET") && (len(r.Params) > 0) {
+		result += "?" + r.Params.Encode()
+	}
+	return result
 }
