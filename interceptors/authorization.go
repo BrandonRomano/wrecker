@@ -1,16 +1,16 @@
 package interceptors
 
 import (
-	"github.com/BrandonRomano/wrecker"
+	"github.com/brandonromano/wrecker"
 )
 
-// Authorization generates a wrecker.RequestInterceptorFunc that adds
-// the "Authorization" header into every HTTP request.
-func Authorization(auth string) wrecker.RequestInterceptorFunc {
+// Authorization is a sample Interceptor that adds a HTTP "Authorization" header to every request.
+func Authorization(auth string) wrecker.Interceptor {
 
 	return wrecker.Interceptor{
 
-		Request: func(r *wrecker.WreckerRequest) error {
+		// This is executed on every Request before its sent to the server
+		Request: func(r *wrecker.Request) error {
 
 			r.Header("Authorization", auth)
 			return nil

@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/brandonromano/wrecker"
+	"github.com/brandonromano/wrecker/interceptors"
 	"github.com/brandonromano/wrecker/test/models"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -55,6 +56,30 @@ func TestInterceptorGet(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
 	assert.Equal(t, response2.Content.(*models.User).UserName, "BrandonRomano")
+}
+
+func TestAuthorizationGet(t *testing.T) {
+
+	w := wrecker.New("http://localhost:" + os.Getenv("PORT"))
+
+	w.AddInterceptor(interceptors.Authorization("Bearer ABC123"))
+
+	response := models.Response{
+		Content: "",
+	}
+
+	// First, show that the request FAILS without the UserId
+	httpResponse, err := w.Get("/authorization").
+		Into(&response).
+		Execute()
+
+	if err != nil {
+		t.Error("Error performing GET /authorization")
+	}
+
+	t.Log(response.Content.(string))
+	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
+	assert.Equal(t, response.Content.(string), "Bearer ABC123")
 }
 
 func TestInterceptorPut(t *testing.T) {
