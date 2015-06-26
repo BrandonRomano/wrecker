@@ -2,6 +2,8 @@
 
 Wrecker is a request builder for JSON based APIs, written in Go.
 
+> Please note that the API is being actively developed, so please expect breaking changes until we post a 1.0 release.  If you would like to use wrecker now, we suggest creating a fork and using that.
+
 [![Build Status](https://travis-ci.org/BrandonRomano/wrecker.svg?branch=master)](https://travis-ci.org/BrandonRomano/wrecker)
 
 ## Fluent Builder
