@@ -8,10 +8,12 @@ import (
 // the "Authorization" header into every HTTP request.
 func Authorization(auth string) wrecker.RequestInterceptorFunc {
 
-	return func(r *wrecker.WreckerRequest) error {
+	return wrecker.Interceptor{
 
-		r.Header("Authorization", auth)
+		Request: func(r *wrecker.WreckerRequest) error {
 
-		return nil
+			r.Header("Authorization", auth)
+			return nil
+		},
 	}
 }

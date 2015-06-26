@@ -15,14 +15,16 @@ type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
 	DefaultContentType string
-	Interceptors       []InterceptorFunc
+	Interceptors       []Interceptor
 }
 
-// InterceptorFunc is a function that receives (and can modify) a
+// Interceptor contains functions that receive (and can modify) a
 // wrecker.Request before it is sent to the server.  The Wrecker instance
-// maintains an array of InterceptorFuncs that are applied to every
+// maintains an array of Interceptors that are applied to every
 // wrecker.Request in the order that they were assigned.
-type InterceptorFunc func(*Request) error
+type Interceptor struct {
+	Request func(*Request) error
+}
 
 func New(baseUrl string) *Wrecker {
 	return &Wrecker{
@@ -70,8 +72,8 @@ func (w *Wrecker) Delete(endpoint string) *Request {
 // Interceptor adds a new InterceptorFunc into the array of
 // functions that are applied to each wrecker.Request *before* it is sent
 // to the server.
-func (w *Wrecker) AddInterceptor(fn InterceptorFunc) {
-	w.Interceptors = append(w.Interceptors, fn)
+func (w *Wrecker) AddInterceptor(interceptor Interceptor) {
+	w.Interceptors = append(w.Interceptors, interceptor)
 }
 
 func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
@@ -79,10 +81,12 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	var bodyReader io.Reader
 	var err error
 
-	// Apply InterceptorFuncs
-	for _, fn := range w.Interceptors {
-		if err := fn(r); err != nil {
-			return nil, err
+	// Apply Interceptors
+	for _, interceptor := range w.Interceptors {
+		if interceptor.Request != nil {
+			if err := interceptor.Request(r); err != nil {
+				return nil, err
+			}
 		}
 	}
 
