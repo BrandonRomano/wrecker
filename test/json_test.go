@@ -19,10 +19,11 @@ func TestPostJSON(t *testing.T) {
 	}
 
 	_, err := wreckerClient.Post("/users").
-		WithBody(userIn).
+		Body(userIn).
 		Into(&response).
 		Execute()
 
+	t.Log(err)
 	assert.True(t, err == nil)
 	assert.True(t, response.Success)
 
@@ -47,10 +48,11 @@ func TestPutJSON(t *testing.T) {
 	}
 
 	_, err := wreckerClient.Put("/users").
-		WithBody(userIn).
+		Body(userIn).
 		Into(&response).
 		Execute()
 
+	t.Log(err)
 	assert.True(t, err == nil)
 	assert.True(t, response.Success)
 
@@ -69,10 +71,11 @@ func TestPutString(t *testing.T) {
 	}
 
 	_, err := wreckerClient.Put("/status").
-		WithBody("status code green").
+		Body("status code green").
 		Into(&response).
 		Execute()
 
+	t.Log(err)
 	assert.True(t, err == nil)
 	assert.True(t, response.Success)
 

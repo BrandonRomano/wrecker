@@ -66,13 +66,13 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	var err error
 
 	// Empty Body means that we're posting Params via Form encoding
-	if r.Body == nil {
+	if r.HttpBody == nil {
 		bodyReader = strings.NewReader(r.Params.Encode())
 		contentType = w.DefaultContentType
 	} else {
 		// Otherwise, we're sending a request body
 		contentType = "application/json"
-		bodyReader, err = prepareRequestBody(r.Body)
+		bodyReader, err = prepareRequestBody(r.HttpBody)
 
 		if err != nil {
 			return nil, err
