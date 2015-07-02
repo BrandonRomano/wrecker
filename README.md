@@ -10,7 +10,7 @@ Without digging too far into anything, here is what your requests will look like
 
 ```go
 wreckerClient.Get("/users").
-    Param("id", "1").
+    URLParam("id", "1").
     Into(&user).            // Loads the response into the user struct
     Execute()
 ```
@@ -73,7 +73,7 @@ Now that we have our struct and our instance of `Wrecker`, we're ready to actual
 user := User{}
 
 response, err := wreckerClient.Get("/users").
-    Param("id", "1").
+    URLParam("id", "1").
     Into(&user).
     Execute()
 
