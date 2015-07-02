@@ -3,7 +3,6 @@ package test
 import (
 	"encoding/json"
 	"github.com/brandonromano/wrecker/test/models"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/julienschmidt/httprouter"
 	"net"
 	"net/http"
@@ -86,8 +85,6 @@ func PutUser(writer http.ResponseWriter, request *http.Request, params httproute
 	response := new(models.Response).Init()
 	defer response.Output(writer)
 
-	spew.Dump(request.Header.Get("Content-Type"))
-
 	if request.Header.Get("Content-Type") == "application/json" {
 
 		user := new(models.User)
@@ -101,10 +98,6 @@ func PutUser(writer http.ResponseWriter, request *http.Request, params httproute
 		response.Content = user
 
 	} else {
-
-		spew.Dump(request.FormValue("id"))
-		spew.Dump(request.FormValue("user_name"))
-		spew.Dump(request.FormValue("location"))
 
 		id, err := strconv.Atoi(request.FormValue("id"))
 		userName := request.FormValue("user_name")
