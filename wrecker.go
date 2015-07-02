@@ -31,6 +31,7 @@ const (
 	GET    = "GET"
 	POST   = "POST"
 	PUT    = "PUT"
+	PATCH  = "PATCH"
 	DELETE = "DELETE"
 )
 
@@ -54,6 +55,10 @@ func (w *Wrecker) Post(endpoint string) *Request {
 
 func (w *Wrecker) Put(endpoint string) *Request {
 	return w.newRequest(PUT, endpoint)
+}
+
+func (w *Wrecker) Patch(endpoint string) *Request {
+	return w.newRequest(PATCH, endpoint)
 }
 
 func (w *Wrecker) Delete(endpoint string) *Request {
