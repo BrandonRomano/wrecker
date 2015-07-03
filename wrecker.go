@@ -42,6 +42,7 @@ const (
 	GET    = "GET"
 	POST   = "POST"
 	PUT    = "PUT"
+	PATCH  = "PATCH"
 	DELETE = "DELETE"
 )
 
@@ -65,6 +66,10 @@ func (w *Wrecker) Post(endpoint string) *Request {
 
 func (w *Wrecker) Put(endpoint string) *Request {
 	return w.newRequest(PUT, endpoint)
+}
+
+func (w *Wrecker) Patch(endpoint string) *Request {
+	return w.newRequest(PATCH, endpoint)
 }
 
 func (w *Wrecker) Delete(endpoint string) *Request {
@@ -154,8 +159,6 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	return resp, err
 }
 
-// prepareRequestBody() function was originally included in the
-// github.com/franela/goreq application (which is also MIT licensed)
 func prepareRequestBody(b interface{}) (io.Reader, error) {
 
 	// try to jsonify it
