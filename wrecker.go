@@ -39,7 +39,8 @@ func (w *Wrecker) newRequest(httpVerb string, endpoint string) *Request {
 	return &Request{
 		HttpVerb:      httpVerb,
 		Endpoint:      endpoint,
-		Params:        url.Values{},
+		URLParams:     url.Values{},
+		FormParams:    url.Values{},
 		Headers:       make(map[string]string),
 		WreckerClient: w,
 	}
@@ -66,21 +67,33 @@ func (w *Wrecker) Delete(endpoint string) *Request {
 }
 
 func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
-	var contentType string
+
+	var contentType string = "application/x-www-form-urlencoded"
 	var bodyReader io.Reader
 	var err error
 
-	// Empty Body means that we're posting Params via Form encoding
-	if r.HttpBody == nil {
-		bodyReader = strings.NewReader(r.Params.Encode())
-		contentType = w.DefaultContentType
-	} else {
-		// Otherwise, we're sending a request body
-		contentType = "application/json"
-		bodyReader, err = prepareRequestBody(r.HttpBody)
+	// GET methods don't have an HTTP Body.  For all other methods,
+	// it's time to defined the body content.
+	if r.HttpVerb != GET {
 
-		if err != nil {
-			return nil, err
+		if r.HttpBody != nil {
+
+			// Otherwise, try using a JSON encoded body that was given to us
+			contentType = "application/json"
+
+			// try to Marshal it as JSON
+			j, err := json.Marshal(r.HttpBody)
+
+			if err != nil {
+				return nil, err
+			}
+
+			bodyReader = bytes.NewReader(j)
+
+		} else {
+
+			// If there are Form Parameters, then let's use form
+			bodyReader = strings.NewReader(r.FormParams.Encode())
 		}
 	}
 
@@ -90,6 +103,7 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 		return nil, err
 	}
 
+	// Set Content-Type for this request
 	clientReq.Header.Add("Content-Type", contentType)
 
 	// Add headers to clientReq
@@ -112,15 +126,4 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 
 	err = json.Unmarshal(body, r.Response)
 	return resp, err
-}
-
-func prepareRequestBody(b interface{}) (io.Reader, error) {
-
-	// try to jsonify it
-	j, err := json.Marshal(b)
-
-	if err == nil {
-		return bytes.NewReader(j), nil
-	}
-	return nil, err
 }
