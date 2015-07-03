@@ -34,7 +34,7 @@ func TestInterceptorGet(t *testing.T) {
 
 	// Next, add the RequestInterceptorFunc, and show that the request
 	// is successful with it.
-	w.AddInterceptor(wrecker.Interceptor{
+	w.Interceptor(wrecker.Interceptor{
 		Request: func(r *wrecker.Request) error {
 			r.Param("id", "1")
 			return nil
@@ -62,7 +62,7 @@ func TestAuthorizationGet(t *testing.T) {
 
 	w := wrecker.New("http://localhost:" + os.Getenv("PORT"))
 
-	w.AddInterceptor(interceptors.Authorization("Bearer ABC123"))
+	w.Interceptor(interceptors.Authorization("Bearer ABC123"))
 
 	response := models.Response{
 		Content: "",
@@ -88,7 +88,7 @@ func TestInterceptorPut(t *testing.T) {
 
 	// This sample interceptor will change the request body to something
 	// completely different
-	w.AddInterceptor(wrecker.Interceptor{
+	w.Interceptor(wrecker.Interceptor{
 		Request: func(r *wrecker.Request) error {
 
 			r.Body(models.User{
