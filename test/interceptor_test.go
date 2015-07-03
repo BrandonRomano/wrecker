@@ -36,7 +36,7 @@ func TestInterceptorGet(t *testing.T) {
 	// is successful with it.
 	w.Interceptor(wrecker.Interceptor{
 		Request: func(r *wrecker.Request) error {
-			r.Param("id", "1")
+			r.URLParam("id", "1")
 			return nil
 		},
 	})
@@ -46,7 +46,7 @@ func TestInterceptorGet(t *testing.T) {
 	}
 
 	httpResponse, err = w.Get("/users").
-		Param("id", "1").
+		URLParam("id", "1").
 		Into(&response2).
 		Execute()
 

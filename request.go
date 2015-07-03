@@ -10,19 +10,25 @@ type Request struct {
 	HttpVerb      string
 	Endpoint      string
 	Response      interface{}
-	Params        url.Values
+	URLParams     url.Values
+	FormParams    url.Values
 	HttpBody      interface{}
 	Headers       map[string]string
 	WreckerClient *Wrecker
 }
 
-func (r *Request) Param(key, value string) *Request {
-	r.Params.Add(key, value)
+func (r *Request) Header(key, value string) *Request {
+	r.Headers[key] = value
 	return r
 }
 
-func (r *Request) Header(key, value string) *Request {
-	r.Headers[key] = value
+func (r *Request) URLParam(key, value string) *Request {
+	r.URLParams.Add(key, value)
+	return r
+}
+
+func (r *Request) FormParam(key, value string) *Request {
+	r.FormParams.Add(key, value)
 	return r
 }
 
@@ -50,8 +56,9 @@ func (r *Request) Execute() (*http.Response, error) {
 func (r *Request) URL() string {
 	result := r.WreckerClient.BaseURL + r.Endpoint
 
-	if (r.HttpVerb == "GET") && (len(r.Params) > 0) {
-		result += "?" + r.Params.Encode()
+	if len(r.URLParams) > 0 {
+		result += "?" + r.URLParams.Encode()
 	}
+
 	return result
 }
