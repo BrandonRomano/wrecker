@@ -76,14 +76,7 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 			// Otherwise, try using a JSON encoded body that was given to us
 			contentType = "application/json"
 
-			// try to Marshal it as JSON
-			j, err := json.Marshal(r.HttpBody)
-
-			if err != nil {
-				return nil, err
-			}
-
-			bodyReader = bytes.NewReader(j)
+			bodyReader, err = prepareRequestBody(r.HttpBody)
 
 		} else {
 
@@ -121,4 +114,26 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 
 	err = json.Unmarshal(body, r.Response)
 	return resp, err
+}
+
+func prepareRequestBody(b interface{}) (io.Reader, error) {
+
+	switch b.(type) {
+
+	case io.Reader:
+		return b.(io.Reader), nil
+
+	case []byte:
+		return bytes.NewReader(b.([]byte)), nil
+
+	default:
+
+		// try to jsonify it
+		j, err := json.Marshal(b)
+
+		if err == nil {
+			return bytes.NewReader(j), nil
+		}
+		return nil, err
+	}
 }
