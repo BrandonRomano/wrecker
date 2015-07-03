@@ -23,7 +23,9 @@ type Wrecker struct {
 // maintains an array of Interceptors that are applied to every
 // wrecker.Request in the order that they were assigned.
 type Interceptor struct {
-	Request func(*Request) error
+	Request     func(*Request) error
+	RawRequest  func(*http.Request) error
+	RawResponse func(*http.Response) error
 }
 
 func New(baseUrl string) *Wrecker {
@@ -72,7 +74,7 @@ func (w *Wrecker) Delete(endpoint string) *Request {
 // Interceptor adds a new InterceptorFunc into the array of
 // functions that are applied to each wrecker.Request *before* it is sent
 // to the server.
-func (w *Wrecker) AddInterceptor(interceptor Interceptor) {
+func (w *Wrecker) Interceptor(interceptor Interceptor) {
 	w.Interceptors = append(w.Interceptors, interceptor)
 }
 
@@ -81,7 +83,7 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	var bodyReader io.Reader
 	var err error
 
-	// Apply Interceptors
+	// Apply Requesst Interceptors
 	for _, interceptor := range w.Interceptors {
 		if interceptor.Request != nil {
 			if err := interceptor.Request(r); err != nil {
@@ -117,12 +119,30 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 		clientReq.Header.Add(key, value)
 	}
 
+	// Apply Requesst Interceptors
+	for _, interceptor := range w.Interceptors {
+		if interceptor.RawRequest != nil {
+			if err := interceptor.RawRequest(clientReq); err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	// Executing request
 	resp, err := w.HttpClient.Do(clientReq)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	// Apply RawResponse Interceptors
+	for _, interceptor := range w.Interceptors {
+		if interceptor.RawResponse != nil {
+			if err := interceptor.RawResponse(resp); err != nil {
+				return nil, err
+			}
+		}
+	}
 
 	// Packing into response
 	body, err := ioutil.ReadAll(resp.Body)
