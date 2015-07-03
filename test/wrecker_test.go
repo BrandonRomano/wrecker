@@ -22,7 +22,7 @@ func TestSuccessfulGet(t *testing.T) {
 	}
 
 	httpResponse, err := wreckerClient.Get("/users").
-		Param("id", "1").
+		URLParam("id", "1").
 		Into(&response).
 		Execute()
 
@@ -56,9 +56,9 @@ func TestSuccessfulPost(t *testing.T) {
 	}
 
 	httpResponse, err := wreckerClient.Post("/users").
-		Param("id", "1").
-		Param("user_name", "BrandonRomano").
-		Param("location", "Brooklyn, NY").
+		FormParam("id", "1").
+		FormParam("user_name", "BrandonRomano").
+		FormParam("location", "Brooklyn, NY").
 		Into(&response).
 		Execute()
 
@@ -76,8 +76,8 @@ func TestFailPost(t *testing.T) {
 	}
 
 	httpResponse, err := wreckerClient.Post("/users").
-		Param("id", "1").
-		Param("user_name", "BrandonRomano").
+		FormParam("id", "1").
+		FormParam("user_name", "BrandonRomano").
 		Into(&response).
 		Execute()
 
@@ -95,8 +95,8 @@ func TestSuccessfulPut(t *testing.T) {
 
 	username := "BrandonRomano100"
 	httpResponse, err := wreckerClient.Put("/users").
-		Param("id", "1").
-		Param("user_name", username).
+		FormParam("id", "1").
+		FormParam("user_name", username).
 		Into(&response).
 		Execute()
 

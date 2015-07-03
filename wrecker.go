@@ -15,6 +15,17 @@ type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
 	DefaultContentType string
+	Interceptors       []Interceptor
+}
+
+// Interceptor contains functions that receive (and can modify) a
+// wrecker.Request before it is sent to the server.  The Wrecker instance
+// maintains an array of Interceptors that are applied to every
+// wrecker.Request in the order that they were assigned.
+type Interceptor struct {
+	Request     func(*Request) error
+	RawRequest  func(*http.Request) error
+	RawResponse func(*http.Response, []byte) error
 }
 
 func New(baseUrl string) *Wrecker {
@@ -39,7 +50,8 @@ func (w *Wrecker) newRequest(httpVerb string, endpoint string) *Request {
 	return &Request{
 		HttpVerb:      httpVerb,
 		Endpoint:      endpoint,
-		Params:        url.Values{},
+		URLParams:     url.Values{},
+		FormParams:    url.Values{},
 		Headers:       make(map[string]string),
 		WreckerClient: w,
 	}
@@ -65,22 +77,45 @@ func (w *Wrecker) Delete(endpoint string) *Request {
 	return w.newRequest(DELETE, endpoint)
 }
 
+// Interceptor adds a new InterceptorFunc into the array of
+// functions that are applied to each wrecker.Request *before* it is sent
+// to the server.
+func (w *Wrecker) Intercept(interceptor Interceptor) *Wrecker {
+	w.Interceptors = append(w.Interceptors, interceptor)
+
+	return w
+}
+
 func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
-	var contentType string
+
+	var contentType string = "application/x-www-form-urlencoded"
 	var bodyReader io.Reader
 	var err error
 
-	// Empty Body means that we're posting Params via Form encoding
-	if r.HttpBody == nil {
-		bodyReader = strings.NewReader(r.Params.Encode())
-		contentType = w.DefaultContentType
-	} else {
-		// Otherwise, we're sending a request body
-		contentType = "application/json"
-		bodyReader, err = prepareRequestBody(r.HttpBody)
+	// Apply Requesst Interceptors
+	for _, interceptor := range w.Interceptors {
+		if interceptor.Request != nil {
+			if err := interceptor.Request(r); err != nil {
+				return nil, err
+			}
+		}
+	}
 
-		if err != nil {
-			return nil, err
+	// GET methods don't have an HTTP Body.  For all other methods,
+	// it's time to defined the body content.
+	if r.HttpVerb != GET {
+
+		if r.HttpBody != nil {
+
+			// Otherwise, try using a JSON encoded body that was given to us
+			contentType = "application/json"
+
+			bodyReader, err = prepareRequestBody(r.HttpBody)
+
+		} else {
+
+			// If there are Form Parameters, then let's use form
+			bodyReader = strings.NewReader(r.FormParams.Encode())
 		}
 	}
 
@@ -90,11 +125,21 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 		return nil, err
 	}
 
+	// Set Content-Type for this request
 	clientReq.Header.Add("Content-Type", contentType)
 
 	// Add headers to clientReq
 	for key, value := range r.Headers {
 		clientReq.Header.Add(key, value)
+	}
+
+	// Apply Requesst Interceptors
+	for _, interceptor := range w.Interceptors {
+		if interceptor.RawRequest != nil {
+			if err := interceptor.RawRequest(clientReq); err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	// Executing request
@@ -110,17 +155,37 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 		return nil, err
 	}
 
+	// Apply RawResponse Interceptors
+	for _, interceptor := range w.Interceptors {
+		if interceptor.RawResponse != nil {
+			if err := interceptor.RawResponse(resp, body); err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	err = json.Unmarshal(body, r.Response)
 	return resp, err
 }
 
 func prepareRequestBody(b interface{}) (io.Reader, error) {
 
-	// try to jsonify it
-	j, err := json.Marshal(b)
+	switch b.(type) {
 
-	if err == nil {
-		return bytes.NewReader(j), nil
+	case io.Reader:
+		return b.(io.Reader), nil
+
+	case []byte:
+		return bytes.NewReader(b.([]byte)), nil
+
+	default:
+
+		// try to jsonify it
+		j, err := json.Marshal(b)
+
+		if err == nil {
+			return bytes.NewReader(j), nil
+		}
+		return nil, err
 	}
-	return nil, err
 }

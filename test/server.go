@@ -28,6 +28,7 @@ func buildRouter() *httprouter.Router {
 	router.PUT("/users", PutUser)
 	router.DELETE("/users/:id", DeleteUser)
 	router.PUT("/status", PutStatus)
+	router.GET("/authorization", GetAuthorization)
 	return router
 }
 
@@ -152,4 +153,12 @@ func PutStatus(writer http.ResponseWriter, request *http.Request, params httprou
 
 		response.Content = status
 	}
+}
+
+// GetAuthorization echoes the HTTP "Authorization" header in the body of the response.
+func GetAuthorization(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	response := new(models.Response).Init()
+	defer response.Output(writer)
+
+	response.Content = request.Header.Get("Authorization")
 }
