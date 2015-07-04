@@ -3,6 +3,7 @@ package interceptors
 import (
 	"fmt"
 	"github.com/brandonromano/wrecker"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -13,22 +14,53 @@ func Debug() wrecker.Interceptor {
 	return wrecker.Interceptor{
 
 		// This is executed on every Request before its sent to the server
-		Request: func(r *wrecker.Request) error {
+		WreckerRequest: func(r *wrecker.Request) error {
+
+			fmt.Println("")
+			fmt.Println("Wrecker Request")
+			fmt.Println("-------------")
+			fmt.Println("Method: ", r.HttpVerb)
+			fmt.Println("URL: ", r.URL())
+
+			fmt.Println("Headers:")
+
+			for i := range r.Headers {
+				fmt.Println("- ", i, ": ", r.Headers[i])
+			}
+
+			fmt.Println("URLParams:")
+
+			for i := range r.URLParams {
+				fmt.Println("- ", i, ": ", r.URLParams[i])
+			}
+
+			fmt.Println("FormParams:")
+
+			for i := range r.FormParams {
+				fmt.Println("- ", i, ": ", r.FormParams[i])
+			}
+
+			fmt.Println("")
 
 			return nil
 		},
 
-		RawRequest: func(r *http.Request) error {
+		HTTPRequest: func(r *http.Request) error {
 
 			fmt.Println("")
 			fmt.Println("HTTP Request")
 			fmt.Println("-------------")
-			fmt.Println("URL: ", r.URL.String())
 			fmt.Println("Method: ", r.Method)
+			fmt.Println("URL: ", r.URL.String())
+			fmt.Println("Body: ", string(ioutil.ReadAll(r.Body)))
+			fmt.Println("Body (Deux): ", string(ioutil.ReadAll(r.Body)))
+			fmt.Println("Body (Trois): ", string(ioutil.ReadAll(r.Body)))
+			fmt.Println("")
+
 			return nil
 		},
 
-		RawResponse: func(r *http.Response, body []byte) error {
+		HTTPResponse: func(r *http.Response, body []byte) error {
 
 			fmt.Println("")
 			fmt.Println("HTTP Response")

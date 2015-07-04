@@ -35,7 +35,7 @@ func TestInterceptorGet(t *testing.T) {
 	// Next, add the RequestInterceptorFunc, and show that the request
 	// is successful with it.
 	w.Interceptor(wrecker.Interceptor{
-		Request: func(r *wrecker.Request) error {
+		WreckerRequest: func(r *wrecker.Request) error {
 			r.URLParam("id", "1")
 			return nil
 		},
@@ -89,7 +89,7 @@ func TestInterceptorPut(t *testing.T) {
 	// This sample interceptor will change the request body to something
 	// completely different
 	w.Interceptor(wrecker.Interceptor{
-		Request: func(r *wrecker.Request) error {
+		WreckerRequest: func(r *wrecker.Request) error {
 
 			r.Body(models.User{
 				Id:       97,
