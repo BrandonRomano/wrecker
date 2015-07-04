@@ -3,7 +3,7 @@ package interceptors
 import (
 	"fmt"
 	"github.com/brandonromano/wrecker"
-	"io/ioutil"
+	// "io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -52,9 +52,9 @@ func Debug() wrecker.Interceptor {
 			fmt.Println("-------------")
 			fmt.Println("Method: ", r.Method)
 			fmt.Println("URL: ", r.URL.String())
-			fmt.Println("Body: ", string(ioutil.ReadAll(r.Body)))
-			fmt.Println("Body (Deux): ", string(ioutil.ReadAll(r.Body)))
-			fmt.Println("Body (Trois): ", string(ioutil.ReadAll(r.Body)))
+			// fmt.Println("Body: ", string(ioutil.ReadAll(r.Body)))
+			// fmt.Println("Body (Deux): ", string(ioutil.ReadAll(r.Body)))
+			// fmt.Println("Body (Trois): ", string(ioutil.ReadAll(r.Body)))
 			fmt.Println("")
 
 			return nil
