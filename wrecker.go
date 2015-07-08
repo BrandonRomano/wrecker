@@ -68,7 +68,7 @@ func (w *Wrecker) Delete(endpoint string) *Request {
 
 func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 
-	var contentType string = "application/x-www-form-urlencoded"
+	var contentType string
 	var bodyReader io.Reader
 	var err error
 
@@ -76,24 +76,10 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	// it's time to defined the body content.
 	if r.HttpVerb != GET {
 
-		if r.HttpBody != nil {
+		bodyReader, contentType, err = w.getRequestBody(r)
 
-			// Otherwise, try using a JSON encoded body that was given to us
-			contentType = "application/json"
-
-			// try to Marshal it as JSON
-			j, err := json.Marshal(r.HttpBody)
-
-			if err != nil {
-				return nil, err
-			}
-
-			bodyReader = bytes.NewReader(j)
-
-		} else {
-
-			// If there are Form Parameters, then let's use form
-			bodyReader = strings.NewReader(r.FormParams.Encode())
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -126,4 +112,43 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 
 	err = json.Unmarshal(body, r.Response)
 	return resp, err
+}
+
+func (w *Wrecker) getRequestBody(r *Request) (io.Reader, string, error) {
+
+	// If there's no body, then try form encoding
+	if r.HttpBody == nil {
+
+		// If there are Form Parameters, then let's use form
+		return strings.NewReader(r.FormParams.Encode()), "application/x-www-form-urlencoded", nil
+
+	} else {
+
+		// Otherwise, try using a JSON encoded body that was given to us
+
+		var reader io.Reader
+		var contentType = "application/json"
+		var err error
+
+		switch r.HttpBody.(type) {
+
+		case io.Reader:
+			reader = r.HttpBody.(io.Reader)
+
+		case []byte:
+			reader = bytes.NewReader(r.HttpBody.([]byte))
+
+		default:
+
+			// try to jsonify it
+			j, err := json.Marshal(r.HttpBody)
+
+			if err == nil {
+				reader = bytes.NewReader(j)
+			}
+		}
+
+		return reader, contentType, err
+	}
+
 }
