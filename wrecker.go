@@ -15,6 +15,7 @@ type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
 	DefaultContentType string
+	Interceptors       []Interceptor
 }
 
 func New(baseUrl string) *Wrecker {
@@ -66,11 +67,29 @@ func (w *Wrecker) Delete(endpoint string) *Request {
 	return w.newRequest(DELETE, endpoint)
 }
 
+// Interceptor adds a new InterceptorFunc into the array of
+// functions that are applied to each wrecker.Request *before* it is sent
+// to the server.
+func (w *Wrecker) Intercept(interceptor Interceptor) *Wrecker {
+	w.Interceptors = append(w.Interceptors, interceptor)
+
+	return w
+}
+
 func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 
 	var contentType string
 	var bodyReader io.Reader
 	var err error
+
+	// Apply WreckerRequest Interceptors
+	for _, interceptor := range w.Interceptors {
+		if interceptor.WreckerRequest != nil {
+			if err := interceptor.WreckerRequest(r); err != nil {
+				return nil, err
+			}
+		}
+	}
 
 	// GET methods don't have an HTTP Body.  For all other methods,
 	// it's time to defined the body content.
