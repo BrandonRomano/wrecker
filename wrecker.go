@@ -15,6 +15,7 @@ type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
 	DefaultContentType string
+	Interceptors       []Interceptor
 }
 
 func New(baseUrl string) *Wrecker {
