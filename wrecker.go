@@ -67,6 +67,15 @@ func (w *Wrecker) Delete(endpoint string) *Request {
 	return w.newRequest(DELETE, endpoint)
 }
 
+// Interceptor adds a new InterceptorFunc into the array of
+// functions that are applied to each wrecker.Request *before* it is sent
+// to the server.
+func (w *Wrecker) Intercept(interceptor Interceptor) *Wrecker {
+	w.Interceptors = append(w.Interceptors, interceptor)
+
+	return w
+}
+
 func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 
 	var contentType string
