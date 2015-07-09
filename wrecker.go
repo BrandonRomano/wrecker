@@ -82,6 +82,15 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	var bodyReader io.Reader
 	var err error
 
+	// Apply WreckerRequest Interceptors
+	for _, interceptor := range w.Interceptors {
+		if interceptor.WreckerRequest != nil {
+			if err := interceptor.WreckerRequest(r); err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	// GET methods don't have an HTTP Body.  For all other methods,
 	// it's time to defined the body content.
 	if r.HttpVerb != GET {
