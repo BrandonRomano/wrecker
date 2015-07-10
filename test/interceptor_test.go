@@ -31,16 +31,18 @@ func TestInterceptorGet(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 
-	/*
-		// Next, add the RequestInterceptorFunc, and show that the request
-		// is successful with it.
-		w.Intercept(wrecker.Interceptor{
-			WreckerRequest: func(r *wrecker.Request) error {
-				r.URLParam("id", "1")
-				return nil
-			},
-		})
+	// Next, add the RequestInterceptorFunc, and show that the request
+	// is successful with it.
 
+	interceptor := wrecker.Interceptor{
+		WreckerRequest: func(r *wrecker.Request) error {
+			r.URLParam("id", "1")
+			return nil
+		},
+	}
+	w.Intercept(interceptor)
+
+	/*
 		response2 := models.Response{
 			Content: &models.User{},
 		}
