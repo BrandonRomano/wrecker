@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/brandonromano/wrecker"
 	"github.com/brandonromano/wrecker/test/models"
 	"github.com/stretchr/testify/assert"
@@ -34,12 +35,13 @@ func TestInterceptorGet(t *testing.T) {
 	// Next, add the RequestInterceptorFunc, and show that the request
 	// is successful with it.
 
-	interceptor := wrecker.Interceptor{
-	//WreckerRequest: func(r *wrecker.Request) error {
-	//	r.URLParam("id", "1")
-	//	return nil
-	//},
+	plswork := wrecker.PlsWork{
+		Value: 100,
 	}
+
+	fmt.Println(plswork.Value)
+
+	interceptor := wrecker.Interceptor{}
 	w.Intercept(interceptor)
 
 	/*

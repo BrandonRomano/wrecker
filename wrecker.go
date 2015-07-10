@@ -15,6 +15,10 @@ type Interceptor struct {
 	WreckerRequest func(*Request) error
 }
 
+type PlsWork struct {
+	Value int
+}
+
 type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
