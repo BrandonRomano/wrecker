@@ -19,6 +19,12 @@ type PlsWork struct {
 	Value int
 }
 
+func NewPlsWork() PlsWork {
+	return PlsWork{
+		Value: 1100,
+	}
+}
+
 type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client

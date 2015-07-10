@@ -3,46 +3,22 @@ package test
 import (
 	"fmt"
 	"github.com/brandonromano/wrecker"
-	"github.com/brandonromano/wrecker/test/models"
-	"github.com/stretchr/testify/assert"
-	"net/http"
 	"os"
 	"testing"
 )
 
 func TestInterceptorGet(t *testing.T) {
 
-	var httpResponse *http.Response
-	var err error
+	wrecker.New("http://localhost:" + os.Getenv("PORT"))
 
-	w := wrecker.New("http://localhost:" + os.Getenv("PORT"))
-
-	response := models.Response{
-		Content: &models.User{},
-	}
-
-	// First, show that the request FAILS without the UserId
-	httpResponse, err = w.Get("/users").
-		Into(&response).
-		Execute()
-
-	if err != nil {
-		t.Error("Error performing GET /users")
-	}
-
-	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
-
-	// Next, add the RequestInterceptorFunc, and show that the request
-	// is successful with it.
+	newPlsWork := wrecker.NewPlsWork()
+	fmt.Println(newPlsWork.Value)
 
 	plswork := wrecker.PlsWork{
 		Value: 100,
 	}
 
 	fmt.Println(plswork.Value)
-
-	interceptor := wrecker.Interceptor{}
-	w.Intercept(interceptor)
 
 	/*
 		response2 := models.Response{
