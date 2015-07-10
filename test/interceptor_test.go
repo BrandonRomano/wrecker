@@ -31,30 +31,32 @@ func TestInterceptorGet(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 
-	// Next, add the RequestInterceptorFunc, and show that the request
-	// is successful with it.
-	w.Intercept(wrecker.Interceptor{
-		WreckerRequest: func(r *wrecker.Request) error {
-			r.URLParam("id", "1")
-			return nil
-		},
-	})
+	/*
+		// Next, add the RequestInterceptorFunc, and show that the request
+		// is successful with it.
+		w.Intercept(wrecker.Interceptor{
+			WreckerRequest: func(r *wrecker.Request) error {
+				r.URLParam("id", "1")
+				return nil
+			},
+		})
 
-	response2 := models.Response{
-		Content: &models.User{},
-	}
+		response2 := models.Response{
+			Content: &models.User{},
+		}
 
-	httpResponse, err = w.Get("/users").
-		URLParam("id", "1").
-		Into(&response2).
-		Execute()
+		httpResponse, err = w.Get("/users").
+			URLParam("id", "1").
+			Into(&response2).
+			Execute()
 
-	if err != nil {
-		t.Error("Error performing GET /users")
-	}
+		if err != nil {
+			t.Error("Error performing GET /users")
+		}
 
-	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
-	assert.Equal(t, response2.Content.(*models.User).UserName, "BrandonRomano")
+		assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
+		assert.Equal(t, response2.Content.(*models.User).UserName, "BrandonRomano")
+	*/
 }
 
 /*
