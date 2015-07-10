@@ -35,10 +35,10 @@ func TestInterceptorGet(t *testing.T) {
 	// is successful with it.
 
 	interceptor := wrecker.Interceptor{
-		WreckerRequest: func(r *wrecker.Request) error {
-			r.URLParam("id", "1")
-			return nil
-		},
+	//WreckerRequest: func(r *wrecker.Request) error {
+	//	r.URLParam("id", "1")
+	//	return nil
+	//},
 	}
 	w.Intercept(interceptor)
 
