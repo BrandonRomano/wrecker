@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+type Interceptor struct {
+	WreckerRequest func(*Request) error
+}
+
 type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
