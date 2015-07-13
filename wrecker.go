@@ -15,16 +15,6 @@ type Interceptor struct {
 	WreckerRequest func(*Request) error
 }
 
-type PlsWork struct {
-	Value int
-}
-
-func NewPlsWork() PlsWork {
-	return PlsWork{
-		Value: 1100,
-	}
-}
-
 type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
@@ -39,6 +29,16 @@ func New(baseUrl string) *Wrecker {
 			Timeout: 10 * time.Second,
 		},
 		DefaultContentType: "application/x-www-form-urlencoded",
+	}
+}
+
+type Person struct {
+	Value string
+}
+
+func NewPerson(value string) *Person {
+	return &Person{
+		Value: value,
 	}
 }
 
