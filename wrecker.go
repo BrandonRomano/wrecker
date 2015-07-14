@@ -11,6 +11,16 @@ import (
 	"time"
 )
 
+type TravisTester struct {
+	Value string
+}
+
+func NewTravisTester(value string) *TravisTester {
+	return &TravisTester{
+		Value: value,
+	}
+}
+
 type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
