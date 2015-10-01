@@ -1,8 +1,8 @@
 package test
 
 import (
-	"github.com/brandonromano/wrecker"
-	"github.com/brandonromano/wrecker/test/models"
+	"../"
+	"./models"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
