@@ -30,6 +30,10 @@ wreckerClient = &wrecker.Wrecker{
         Timeout: 10 * time.Second,
     },
     DefaultContentType: "application/x-www-form-urlencoded",
+    RequestInterceptor: func(req *wrecker.Request) error {
+        req.URLParam("id", "1")
+        return nil
+    },
 }
 ```
 
@@ -38,6 +42,7 @@ There are three values you'll have to set
 - `BaseURL`: This is the base URL of the API you will be using
 - `HttpClient`: This is an instance of an http.Client.  Feel free to tweak this as much as you would like.
 - `DefaultContentType`: This is the value of the `Content-Type` header that will be added to every request.  This can be overridden at request level, but for convenience you can set a default.
+- `RequestInterceptor`: This is an interceptor that can update every request before it gets sent out.  This can safely be set to nil if you do not have a need for a request interceptor.
 
 You're only going to have to do this once, but if you still find it's too verbose or you don't need the flexibility you can do this:
 
@@ -45,7 +50,7 @@ You're only going to have to do this once, but if you still find it's too verbos
 wreckerClient = wrecker.New("http://localhost:" + os.Getenv("PORT"))
 ```
 
-This way will default the `HttpClient` + `DefaultContentType` to the values set in the first example.
+This way will default the `HttpClient` + `DefaultContentType` to the values set in the first example, and `RequestInterceptor` will be set to nil.
 
 ### Creating Requests
 
