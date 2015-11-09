@@ -43,6 +43,12 @@ func (r *Request) Into(response interface{}) *Request {
 }
 
 func (r *Request) Execute() (*http.Response, error) {
+	// Calling interceptor if we have one
+	if r.WreckerClient.RequestInterceptor != nil {
+		r.WreckerClient.RequestInterceptor(r)
+	}
+
+	// Sending Request
 	switch r.HttpVerb {
 
 	case GET, POST, PUT, DELETE:

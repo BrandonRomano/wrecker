@@ -15,6 +15,7 @@ type Wrecker struct {
 	BaseURL            string
 	HttpClient         *http.Client
 	DefaultContentType string
+	RequestInterceptor func(*Request) error
 }
 
 func New(baseUrl string) *Wrecker {
@@ -24,6 +25,7 @@ func New(baseUrl string) *Wrecker {
 			Timeout: 10 * time.Second,
 		},
 		DefaultContentType: "application/x-www-form-urlencoded",
+		RequestInterceptor: nil,
 	}
 }
 
