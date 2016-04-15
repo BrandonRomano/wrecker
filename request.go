@@ -6,6 +6,11 @@ import (
 	"net/url"
 )
 
+type BasicAuthInfo struct {
+	Username string
+	Password string
+}
+
 type Request struct {
 	HttpVerb      string
 	Endpoint      string
@@ -14,6 +19,7 @@ type Request struct {
 	FormParams    url.Values
 	HttpBody      interface{}
 	Headers       map[string]string
+	BasicAuthInfo *BasicAuthInfo
 	WreckerClient *Wrecker
 }
 
@@ -34,6 +40,14 @@ func (r *Request) FormParam(key, value string) *Request {
 
 func (r *Request) Body(body interface{}) *Request {
 	r.HttpBody = body
+	return r
+}
+
+func (r *Request) SetBasicAuth(username, password string) *Request {
+	r.BasicAuthInfo = &BasicAuthInfo{
+		Username: username,
+		Password: password,
+	}
 	return r
 }
 

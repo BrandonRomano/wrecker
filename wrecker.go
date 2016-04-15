@@ -91,6 +91,11 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 		return nil, err
 	}
 
+	// Add Basic Auth, if we have it
+	if r.BasicAuthInfo != nil {
+		clientReq.SetBasicAuth(r.BasicAuthInfo.Username, r.BasicAuthInfo.Password)
+	}
+
 	// Set Content-Type for this request
 	clientReq.Header.Add("Content-Type", contentType)
 
