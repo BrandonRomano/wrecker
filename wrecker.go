@@ -111,14 +111,20 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	}
 	defer resp.Body.Close()
 
-	// Packing into response
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	// Packing into response, if we have one
+	if r.Response != nil {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(body, r.Response)
+		if err != nil {
+			return resp, err
+		}
 	}
 
-	err = json.Unmarshal(body, r.Response)
-	return resp, err
+	// OK
+	return resp, nil
 }
 
 func (w *Wrecker) getRequestBody(r *Request) (io.Reader, string, error) {
