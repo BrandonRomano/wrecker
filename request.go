@@ -65,7 +65,7 @@ func (r *Request) Execute() (*http.Response, error) {
 	// Sending Request
 	switch r.HttpVerb {
 
-	case GET, POST, PUT, DELETE:
+	case GET, POST, PUT, DELETE, PATCH:
 		return r.WreckerClient.sendRequest(r)
 
 	default:
