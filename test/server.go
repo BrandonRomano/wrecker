@@ -2,7 +2,7 @@ package test
 
 import (
 	"encoding/json"
-	"github.com/brandonromano/wrecker/test/models"
+	"github.com/BrandonRomano/wrecker/test/models"
 	"github.com/julienschmidt/httprouter"
 	"net"
 	"net/http"
