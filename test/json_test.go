@@ -1,7 +1,7 @@
 package test
 
 import (
-	"./models"
+	"github.com/BrandonRomano/wrecker/test/models"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
