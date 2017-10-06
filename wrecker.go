@@ -123,6 +123,14 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 		}
 	}
 
+	// Handling HTTP Error
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		return nil, ResponseError{
+			StatusCode: resp.StatusCode,
+			StatusText: resp.Status,
+		}
+	}
+
 	// OK
 	return resp, nil
 }
