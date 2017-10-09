@@ -1,13 +1,14 @@
 package test
 
 import (
-	"github.com/BrandonRomano/wrecker"
-	"github.com/BrandonRomano/wrecker/test/models"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/BrandonRomano/wrecker"
+	"github.com/BrandonRomano/wrecker/test/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInterceptorGet(t *testing.T) {

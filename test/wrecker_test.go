@@ -1,12 +1,13 @@
 package test
 
 import (
-	"github.com/BrandonRomano/wrecker"
-	"github.com/BrandonRomano/wrecker/test/models"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/BrandonRomano/wrecker"
+	"github.com/BrandonRomano/wrecker/test/models"
+	"github.com/stretchr/testify/assert"
 )
 
 var wreckerClient *wrecker.Wrecker
@@ -26,10 +27,7 @@ func TestSuccessfulGet(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing GET /users")
-	}
-
+	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
 	assert.Equal(t, response.Content.(*models.User).UserName, "BrandonRomano")
 }
@@ -43,10 +41,7 @@ func TestFailGet(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing GET /users")
-	}
-
+	assert.NotNil(t, err)
 	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
 
@@ -62,10 +57,7 @@ func TestSuccessfulPost(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing POST /users")
-	}
-
+	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
 	assert.Equal(t, response.Content.(*models.User).UserName, "BrandonRomano")
 }
@@ -81,8 +73,8 @@ func TestFailPost(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing POST /users")
+	if err == nil {
+		t.Error("Error expected for POST /users")
 	}
 
 	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
@@ -100,10 +92,7 @@ func TestSuccessfulPut(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing PUT /users")
-	}
-
+	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
 	assert.Equal(t, response.Content.(*models.User).UserName, username)
 }
@@ -117,10 +106,7 @@ func TestFailPut(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing PUT /users")
-	}
-
+	assert.NotNil(t, err)
 	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
 
@@ -132,10 +118,7 @@ func TestSuccessfulDelete(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing DELETE /users")
-	}
-
+	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, httpResponse.StatusCode)
 }
 
@@ -147,10 +130,7 @@ func TestDeleteFailFromURL(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing DELETE /users")
-	}
-
+	assert.NotNil(t, err)
 	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
 
@@ -161,9 +141,6 @@ func TestDeleteFailFromHeader(t *testing.T) {
 		Into(&response).
 		Execute()
 
-	if err != nil {
-		t.Error("Error performing DELETE /users")
-	}
-
+	assert.NotNil(t, err)
 	assert.Equal(t, http.StatusBadRequest, httpResponse.StatusCode)
 }
