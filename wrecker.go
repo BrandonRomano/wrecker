@@ -109,11 +109,11 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
 	// Packing into response, if we have one
 	if r.Response != nil {
 		body, err := ioutil.ReadAll(resp.Body)
+		defer resp.Body.Close()
 		if err != nil {
 			return nil, err
 		}
@@ -125,7 +125,7 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 
 	// Handling HTTP Error
 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return nil, ResponseError{
+		return resp, ResponseError{
 			StatusCode: resp.StatusCode,
 			StatusText: resp.Status,
 		}
