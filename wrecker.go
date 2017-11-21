@@ -104,6 +104,11 @@ func (w *Wrecker) sendRequest(r *Request) (*http.Response, error) {
 		clientReq.Header.Add(key, value)
 	}
 
+	// Add cookies
+	for _, cookie := range r.Cookies {
+		clientReq.AddCookie(cookie)
+	}
+
 	// Executing request
 	resp, err := w.HttpClient.Do(clientReq)
 	if err != nil {

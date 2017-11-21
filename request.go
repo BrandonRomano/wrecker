@@ -19,8 +19,14 @@ type Request struct {
 	FormParams    url.Values
 	HttpBody      interface{}
 	Headers       map[string]string
+	Cookies       []*http.Cookie
 	BasicAuthInfo *BasicAuthInfo
 	WreckerClient *Wrecker
+}
+
+func (r *Request) Cookie(cookie *http.Cookie) *Request {
+	r.Cookies = append(r.Cookies, cookie)
+	return r
 }
 
 func (r *Request) Header(key, value string) *Request {
